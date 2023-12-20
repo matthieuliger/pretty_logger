@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pretty-logger"
+version = "0.1.0"
+description = ""
+authors = ["Matthieu Liger <matthieu.liger@gmail.com>"]
+readme = "README.md"
+packages = [{include = "pretty_logger", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+colored-logs = "^0.2.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
