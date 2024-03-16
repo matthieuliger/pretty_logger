@@ -8,7 +8,7 @@ packages = [{include = "pretty_logger", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-colored-logs = "^0.2.10"
+coloredlogs = "^15.0.1"
 
 
 [build-system]
