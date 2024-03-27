@@ -18,12 +18,14 @@ def get_logger(
     level=logging.DEBUG,
     name="logger",
     full_path="logger.log",
-    add_console_hander: bool = True,
+    add_console_hander: bool = False,
 ):
     logging.setLoggerClass(ClassLogger)
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    # adapter = CustomAdapter(logger, {'somextra': 'dummy'})
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
 
     format_string = (
         "[%(asctime)s.%(msecs)03d] - %(name)s"
@@ -31,9 +33,15 @@ def get_logger(
         "- %(filename)s: %(lineno)d [%(funcName)s]: %(message)s"
     )
 
-    # plain_formatter = logging.Formatter(format_string)
+    file_handler = logging.FileHandler(full_path, mode="w")
+    file_handler.setLevel(level)
+    logger.addHandler(file_handler)
 
     coloredlogs.install(logger=logger, milliseconds=True)
+
+    for handler in logger.handlers[1:]:
+        logger.removeHandler(handler)
+
     colored_formatter = coloredlogs.ColoredFormatter(
         fmt=format_string,
         level_styles=dict(
@@ -46,18 +54,13 @@ def get_logger(
         field_styles=format_dictionary,
     )
 
-    console_handler = logger.handlers[0]
-    file_handler = logging.FileHandler(full_path, mode="w")
-
-    console_handler.setLevel(level)
-    file_handler.setLevel(level)
-
     file_handler.setFormatter(colored_formatter)
 
     if add_console_hander:
+        console_handler = logger.handlers[0]
+        console_handler.setLevel(level)
         console_handler.setFormatter(colored_formatter)
         logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
 
     logger.propagate = False
     return logger
