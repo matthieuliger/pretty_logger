@@ -1,5 +1,7 @@
 import logging
 import coloredlogs  # type: ignore
+from pathlib import Path
+import subprocess
 
 format_dictionary = {
     "name": {"color": "green"},
@@ -12,6 +14,20 @@ format_dictionary = {
     "filename": {"color": "blue"},
     "ClassName": {"color": "magenta"},
 }
+
+
+def get_git_root():
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return None
 
 
 def get_logger(
@@ -32,15 +48,16 @@ def get_logger(
         "- %(levelname)s %(className)s"
         "- %(filename)s: %(lineno)d [%(funcName)s]: %(message)s"
     )
-
+    if Path(full_path).exists():
+        Path(full_path).unlink()
     file_handler = logging.FileHandler(full_path, mode="w")
     file_handler.setLevel(level)
     logger.addHandler(file_handler)
 
     coloredlogs.install(logger=logger, milliseconds=True)
 
-    for handler in logger.handlers[1:]:
-        logger.removeHandler(handler)
+    # for handler in logger.handlers[1:]:
+    #     logger.removeHandler(handler)
 
     colored_formatter = coloredlogs.ColoredFormatter(
         fmt=format_string,
