@@ -2,6 +2,8 @@ import logging
 import coloredlogs  # type: ignore
 from pathlib import Path
 import subprocess
+import textwrap
+
 
 format_dictionary = {
     "name": {"color": "green"},
@@ -40,8 +42,8 @@ def get_logger(
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
+    # for handler in logger.handlers[:]:
+    #     logger.removeHandler(handler)
 
     format_string = (
         "[%(asctime)s.%(msecs)03d] - %(name)s"
@@ -71,7 +73,8 @@ def get_logger(
         field_styles=format_dictionary,
     )
 
-    file_handler.setFormatter(colored_formatter)
+    wrapped_colored_formatter = WrappedColoredFormatter(colored_formatter)
+    file_handler.setFormatter(wrapped_colored_formatter)
 
     if add_console_hander:
         console_handler = logger.handlers[0]
@@ -81,6 +84,16 @@ def get_logger(
 
     logger.propagate = False
     return logger
+
+
+class WrappedColoredFormatter(logging.Formatter):
+    def __init__(self, colored_formatter, width=120):
+        self.colored_formatter = colored_formatter
+        self.width = width
+
+    def format(self, record):
+        original = self.colored_formatter.format(record)
+        return "\n".join(textwrap.wrap(original, self.width))
 
 
 class ClassLogger(logging.Logger):
