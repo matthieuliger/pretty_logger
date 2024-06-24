@@ -9,7 +9,11 @@ packages = [{include = "pretty_logger", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 coloredlogs = "^15.0.1"
+seaborn = "^0.13.2"
 
+
+[tool.poetry.group.dev.dependencies]
+dot2tex = "^2.11.3"
 
 [build-system]
 requires = ["poetry-core"]
