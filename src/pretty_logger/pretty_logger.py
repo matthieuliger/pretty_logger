@@ -14,7 +14,7 @@ format_dictionary = {
     "message": {"color": "green"},
     "funcName": {"color": "white"},
     "filename": {"color": "blue"},
-    "ClassName": {"color": "magenta"},
+    "className": {"color": "magenta"},
 }
 
 
@@ -35,31 +35,30 @@ def get_git_root():
 def get_logger(
     level=logging.DEBUG,
     name="logger",
-    full_path="logger.log",
+    path="logger.log",
     add_console_hander: bool = False,
 ):
     logging.setLoggerClass(ClassLogger)
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
-    # for handler in logger.handlers[:]:
-    #     logger.removeHandler(handler)
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
 
     format_string = (
         "[%(asctime)s.%(msecs)03d] - %(name)s"
         "- %(levelname)s %(className)s"
         "- %(filename)s: %(lineno)d [%(funcName)s]: %(message)s"
     )
-    if Path(full_path).exists():
-        Path(full_path).unlink()
-    file_handler = logging.FileHandler(full_path, mode="w")
+    if Path(path).exists():
+        Path(path).unlink()
+
+    if not Path(path).parent.exists():
+        Path(path).parent.mkdir()
+
+    file_handler = logging.FileHandler(path, mode="w")
     file_handler.setLevel(level)
     logger.addHandler(file_handler)
-
-    coloredlogs.install(logger=logger, milliseconds=True)
-
-    # for handler in logger.handlers[1:]:
-    #     logger.removeHandler(handler)
 
     colored_formatter = coloredlogs.ColoredFormatter(
         fmt=format_string,
@@ -75,19 +74,24 @@ def get_logger(
 
     wrapped_colored_formatter = WrappedColoredFormatter(colored_formatter)
     file_handler.setFormatter(wrapped_colored_formatter)
+    handlers = []
+    handlers += [file_handler]
 
     if add_console_hander:
-        console_handler = logger.handlers[0]
+        console_handler = logging.StreamHandler()
         console_handler.setLevel(level)
-        console_handler.setFormatter(colored_formatter)
+        console_handler.setFormatter(wrapped_colored_formatter)
+        handlers += [console_handler]  # type: ignore
         logger.addHandler(console_handler)
+
+    coloredlogs.install(logger=logger, handlers=handlers, milliseconds=True)
 
     logger.propagate = False
     return logger
 
 
 class WrappedColoredFormatter(logging.Formatter):
-    def __init__(self, colored_formatter, width=120):
+    def __init__(self, colored_formatter, width=240):
         self.colored_formatter = colored_formatter
         self.width = width
 
