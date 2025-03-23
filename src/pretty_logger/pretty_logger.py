@@ -4,8 +4,6 @@ from pathlib import Path
 import subprocess
 import textwrap
 
-# dummy line
-
 format_dictionary = {
     "name": {"color": "green"},
     "levelname": {"color": "green"},
