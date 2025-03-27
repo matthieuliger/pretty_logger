@@ -49,13 +49,13 @@ def get_logger(
         "- %(levelname)s %(className)s"
         "- %(filename)s: %(lineno)d [%(funcName)s]: %(message)s"
     )
-    if Path(path).exists():
-        Path(path).unlink()
+    if Path(full_path).exists():
+        Path(full_path).unlink()
 
-    if not Path(path).parent.exists():
-        Path(path).parent.mkdir()
+    if not Path(full_path).parent.exists():
+        Path(full_path).parent.mkdir()
 
-    file_handler = logging.FileHandler(path, mode="w")
+    file_handler = logging.FileHandler(full_path, mode="w")
     file_handler.setLevel(level)
     logger.addHandler(file_handler)
 
