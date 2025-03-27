@@ -34,7 +34,7 @@ def get_git_root():
 def get_logger(
     level=logging.DEBUG,
     name="logger",
-    path="logger.log",
+    full_path="logger.log",
     add_console_hander: bool = False,
 ):
     logging.setLoggerClass(ClassLogger)
