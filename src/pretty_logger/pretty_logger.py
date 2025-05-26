@@ -36,6 +36,7 @@ def get_logger(
     name="logger",
     full_path="logger.log",
     add_console_hander: bool = False,
+    width: int = 200,
 ):
     logging.setLoggerClass(ClassLogger)
     logger = logging.getLogger(name)
@@ -71,7 +72,9 @@ def get_logger(
         field_styles=format_dictionary,
     )
 
-    wrapped_colored_formatter = WrappedColoredFormatter(colored_formatter)
+    wrapped_colored_formatter = WrappedColoredFormatter(
+        colored_formatter, width=width
+    )
     file_handler.setFormatter(wrapped_colored_formatter)
     handlers = []
     handlers += [file_handler]
@@ -96,7 +99,15 @@ class WrappedColoredFormatter(logging.Formatter):
 
     def format(self, record):
         original = self.colored_formatter.format(record)
-        return "\n".join(textwrap.wrap(original, self.width))
+        out_lines = []
+        # preserve blank lines exactly
+        for line in original.splitlines():
+            if not line.strip():
+                out_lines.append("")  # preserve blank line
+            else:
+                # wrap only non-blank lines
+                out_lines.extend(textwrap.wrap(line, self.width))
+        return "\n".join(out_lines)
 
 
 class ClassLogger(logging.Logger):
