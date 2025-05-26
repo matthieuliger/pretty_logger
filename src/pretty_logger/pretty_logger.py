@@ -38,6 +38,7 @@ def get_logger(
     add_console_hander: bool = False,
     width: int = 200,
 ):
+    print(f"Initializing logger {name}")
     logging.setLoggerClass(ClassLogger)
     logger = logging.getLogger(name)
     logger.setLevel(level)
