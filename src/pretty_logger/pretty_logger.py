@@ -16,6 +16,7 @@ import textwrap
 import time
 from typing import Optional
 
+
 level_styles = {
     "debug": {"color": "white", "faint": True},
     "info": {"color": 222},
@@ -98,10 +99,12 @@ def configure_logging(
     level=logging.DEBUG,
     log_file: Path = LOG_FILE,
     console: bool = True,
-    width: int = 240,
+    width: int = 150,
+    silenced_modules: list[str] = ["pymongo", "motor", "httpcore", "httpx"],
 ):
     if not log_file.parent.exists():
         log_file.parent.mkdir(parents=True)
+    print(f"Configuring logging to {log_file}, level={level}, width={width}")
 
     logging.setLoggerClass(ClassLogger)
     root_logger = logging.getLogger()
@@ -109,7 +112,8 @@ def configure_logging(
 
     # Prevent duplicate handlers
     if root_logger.handlers:
-        return
+        root_logger.warning("Root logger already has handlers.")
+        # return
 
     formatter = coloredlogs.ColoredFormatter(
         fmt=FORMAT_STRING,
@@ -137,8 +141,8 @@ def configure_logging(
         logger=root_logger, handlers=root_logger.handlers, milliseconds=True
     )
     root_logger.propagate = False
-    logging.getLogger("pymongo").setLevel(logging.CRITICAL + 1)
-    logging.getLogger("pypandoc").setLevel(logging.CRITICAL + 1)
+    for silenced_module in silenced_modules:
+        logging.getLogger(silenced_module).setLevel(logging.CRITICAL + 1)
 
 
 def get_module_logger(name: str, level=logging.DEBUG) -> logging.Logger:
@@ -169,138 +173,3 @@ def get_module_logger(name: str, level=logging.DEBUG) -> logging.Logger:
         logger.propagate = True  # ✅ Send log to root handlers too
 
     return logger
-
-
-# LOG_PATH = Path("logs")
-# LOG_FILE = LOG_PATH / "yellowkitten.log"
-
-# # Field styles
-# FORMAT_FIELDS = {
-#     "name": {"color": "green"},
-#     "levelname": {"color": "green"},
-#     "lineno": {"color": "magenta"},
-#     "asctime": {"color": 192},
-#     "msecs": {"color": "yellow"},
-#     "message": {"color": "green"},
-#     "funcName": {"color": "white"},
-#     "filename": {"color": "blue"},
-#     "className": {"color": "magenta"},
-# }
-
-# FORMAT_STRING = (
-#     "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s %(className)s "
-#     "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
-# )
-
-
-# class WrappedColoredFormatter(logging.Formatter):
-#     def __init__(self, base_formatter, width=240):
-#         self.base_formatter = base_formatter
-#         self.width = width
-
-#     def format(self, record):
-#         base_output = self.base_formatter.format(record)
-#         wrapped = []
-#         for line in base_output.splitlines():
-#             if not line.strip():
-#                 wrapped.append("")
-#             else:
-#                 wrapped.extend(textwrap.wrap(line, self.width))
-#         return "\n".join(wrapped)
-
-
-# class ClassLogger(logging.Logger):
-
-#     def _log(
-#         self,
-#         level: int,
-#         msg: object,
-#         args: Union[tuple[object, ...], Mapping[str, object]],
-#         exc_info: Union[
-#             None,
-#             bool,
-#             BaseException,
-#             tuple[type[BaseException], BaseException, Optional[TracebackType]],
-#         ] = None,
-#         extra: Optional[Mapping[str, object]] = None,
-#         stack_info: bool = False,
-#         stacklevel: int = 1,
-#     ) -> None:
-#         if extra is None:
-#             class_name = self.EMPTY_CLASS
-#             if (
-#                 isinstance(args, tuple)
-#                 and args
-#                 and hasattr(args[0], "__class__")
-#             ):
-#                 class_name = args[0].__class__.__name__
-#             extra = {"className": class_name}
-
-#         super()._log(
-#             level=level,
-#             msg=msg,
-#             args=args,
-#             exc_info=exc_info,
-#             extra=extra,
-#             stack_info=stack_info,
-#             stacklevel=stacklevel,
-#         )
-
-
-# def get_git_root() -> Optional[str]:
-#     try:
-#         result = subprocess.run(
-#             ["git", "rev-parse", "--show-toplevel"],
-#             capture_output=True,
-#             text=True,
-#             check=True,
-#         )
-#         return result.stdout.strip()
-#     except subprocess.CalledProcessError:
-#         return None
-
-
-# def configure_logging(
-#     level=logging.DEBUG,
-#     log_file: Path = LOG_FILE,
-#     console: bool = True,
-#     width: int = 240,
-# ):
-#     if not log_file.parent.exists():
-#         log_file.parent.mkdir(parents=True)
-
-#     logging.setLoggerClass(ClassLogger)
-#     root_logger = logging.getLogger()
-#     root_logger.setLevel(level)
-
-#     # Prevent duplicate handlers
-#     if root_logger.handlers:
-#         return
-
-#     formatter = coloredlogs.ColoredFormatter(
-#         fmt=FORMAT_STRING,
-#         level_styles={
-#             "debug": {"color": "white", "faint": True},
-#             "info": {"color": 222},
-#             "warning": {"color": "magenta", "bright": True},
-#             "error": {"color": "red", "bold": True},
-#             "critical": {"color": "black", "bold": True, "background": "red"},
-#         },
-#         field_styles=FORMAT_FIELDS,
-#     )
-#     formatter.converter = time.gmtime
-#     wrapped_formatter = WrappedColoredFormatter(formatter, width=width)
-
-#     file_handler = logging.FileHandler(log_file, mode="w")
-#     file_handler.setFormatter(wrapped_formatter)
-#     root_logger.addHandler(file_handler)
-
-#     if console:
-#         console_handler = logging.StreamHandler()
-#         console_handler.setFormatter(wrapped_formatter)
-#         root_logger.addHandler(console_handler)
-
-#     coloredlogs.install(
-#         logger=root_logger, handlers=root_logger.handlers, milliseconds=True
-#     )
-#     root_logger.propagate = False
