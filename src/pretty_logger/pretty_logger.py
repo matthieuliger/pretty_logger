@@ -26,7 +26,7 @@ level_styles = {
 }
 
 LOG_PATH = Path("logs")
-LOG_FILE = LOG_PATH / "yellowkitten.log"
+LOG_FILE = LOG_PATH / "pretty_logger.log"
 
 # Field styles
 FORMAT_FIELDS = {
@@ -95,7 +95,7 @@ def get_git_root() -> Optional[str]:
         return None
 
 
-def configure_logging(
+def configure_pretty_logging(
     level=logging.DEBUG,
     log_file: Path = LOG_FILE,
     console: bool = True,
