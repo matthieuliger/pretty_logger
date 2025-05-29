@@ -29,7 +29,7 @@ class ClassLogger(logging.Logger):
     EMPTY_CLASS: str
 
 def get_git_root() -> str | None: ...
-def configure_logging(
+def configure_pretty_logging(
     level: int = ...,
     log_file: Path = ...,
     console: bool = True,
