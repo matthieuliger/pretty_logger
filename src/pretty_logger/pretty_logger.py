@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import textwrap
 import time
-from typing import Optional
+from typing import Optional, Union
 
 # yellowkitten/custom_logger.py
 import logging
@@ -96,12 +96,25 @@ def get_git_root() -> Optional[str]:
 
 
 def configure_pretty_logging(
-    level=logging.DEBUG,
-    log_file: Path = LOG_FILE,
+    level: Union[str, int] = logging.DEBUG,
+    log_file: Union[str, Path] = LOG_FILE,
     console: bool = True,
     width: int = 150,
     silenced_modules: list[str] = ["pymongo", "motor", "httpcore", "httpx"],
 ):
+
+    if isinstance(log_file, str):
+        log_file = Path(log_file)
+    if not log_file.suffix:
+        log_file = log_file.with_suffix(".log")
+
+    if isinstance(level, str):
+        level = getattr(logging, level.upper(), logging.DEBUG)
+    if not isinstance(level, int):
+        raise ValueError(
+            f"Invalid logging level: {level}. Must be str or int."
+        )
+
     if not log_file.parent.exists():
         log_file.parent.mkdir(parents=True)
     print(f"Configuring logging to {log_file}, level={level}, width={width}")
