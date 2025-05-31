@@ -105,6 +105,7 @@ def configure_pretty_logging(
         "motor",
         "httpcore",
         "httpx",
+        "pdfminer",
         "python_multipart",
     ],
 ):
