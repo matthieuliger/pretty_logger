@@ -100,7 +100,13 @@ def configure_pretty_logging(
     log_file: Union[str, Path] = LOG_FILE,
     console: bool = True,
     width: int = 150,
-    silenced_modules: list[str] = ["pymongo", "motor", "httpcore", "httpx"],
+    silenced_modules: list[str] = [
+        "pymongo",
+        "motor",
+        "httpcore",
+        "httpx",
+        "python_multipart",
+    ],
 ):
 
     if isinstance(log_file, str):
