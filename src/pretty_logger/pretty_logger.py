@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import textwrap
 import time
+import inspect
 from typing import Optional, Union
 
 # yellowkitten/custom_logger.py
@@ -73,12 +74,28 @@ class WrappedColoredFormatter(logging.Formatter):
 class ClassLogger(logging.Logger):
     EMPTY_CLASS = "N/A"
 
+    # def _log(self, level, msg, args, **kwargs):
+    #     if "extra" not in kwargs:
+    #         className = self.EMPTY_CLASS
+    #         if args and hasattr(args[0], "__class__"):
+    #             className = args[0].__class__.__name__
+    #         kwargs["extra"] = {"className": className}
+    #     super()._log(level, msg, args, **kwargs)
+
     def _log(self, level, msg, args, **kwargs):
+        # If the caller already passed “extra”, leave it alone
         if "extra" not in kwargs:
-            className = self.EMPTY_CLASS
-            if args and hasattr(args[0], "__class__"):
-                className = args[0].__class__.__name__
-            kwargs["extra"] = {"className": className}
+            class_name = self.EMPTY_CLASS
+
+            # Walk back up the stack to find a 'self' in locals
+            for frame_info in inspect.stack()[1:]:
+                local_self = frame_info.frame.f_locals.get("self")
+                if local_self is not None:
+                    class_name = local_self.__class__.__name__
+                    break
+
+            kwargs["extra"] = {"className": class_name}
+
         super()._log(level, msg, args, **kwargs)
 
 
