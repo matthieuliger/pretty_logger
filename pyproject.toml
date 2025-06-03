@@ -17,3 +17,9 @@ dot2tex = "^2.11.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.include]]
+path = "src/pretty_logger/*.pyi"
+
+[[tool.poetry.include]]
+path = "src/pretty_logger/py.typed"
