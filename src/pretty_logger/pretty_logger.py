@@ -182,7 +182,9 @@ def configure_pretty_logging(
         logging.getLogger(silenced_module).setLevel(logging.CRITICAL + 1)
 
 
-def get_module_logger(name: str, level=logging.DEBUG) -> logging.Logger:
+def get_module_logger(
+    name: str, level=logging.DEBUG, width: int = 120
+) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
@@ -199,7 +201,9 @@ def get_module_logger(name: str, level=logging.DEBUG) -> logging.Logger:
             level_styles=level_styles,
             field_styles=FORMAT_FIELDS,
         )
-        wrapped_formatter = WrappedColoredFormatter(base_formatter)
+        wrapped_formatter = WrappedColoredFormatter(
+            base_formatter, width=width
+        )
         file_handler.setFormatter(wrapped_formatter)
 
         file_handler.addFilter(EnsureClassName())
