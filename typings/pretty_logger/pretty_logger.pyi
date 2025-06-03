@@ -17,24 +17,6 @@ class WrappedColoredFormatter(logging.Formatter):
     def __init__(self, base_formatter, width: int = 240) -> None: ...
     def format(self, record): ...
 
-class ClassLogger(logging.Logger):
-    EMPTY_CLASS: str
-
 def get_git_root() -> str | None: ...
-def configure_pretty_logging(
-    level: str | int = ...,
-    log_file: str | Path = ...,
-    console: bool = True,
-    width: int = 150,
-    silenced_modules: list[str] = [
-        "pymongo",
-        "motor",
-        "httpcore",
-        "httpx",
-        "pdfminer",
-        "python_multipart",
-    ],
-): ...
-def get_module_logger(
-    name: str, level=..., width: int = 120
-) -> logging.Logger: ...
+def configure_pretty_logging(level: str | int = ..., log_file: str | Path = ..., console: bool = True, width: int = 150, silenced_modules: list[str] = ['pymongo', 'motor', 'httpcore', 'httpx', 'pdfminer', 'python_multipart']): ...
+def get_module_logger(name: str, level=..., width: int = 120) -> logging.Logger: ...

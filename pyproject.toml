@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Matthieu Liger <matthieu.liger@gmail.com>"]
 readme = "README.md"
-packages = [{include = "pretty_logger", from = "src"}]
+packages = [{ include = "pretty_logger", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11"
@@ -20,6 +20,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 # Enable checking inside functions that have no type annotations
+mypy_path = "typings"
 check_untyped_defs = true
 exclude = [
     "archive",
@@ -29,4 +30,3 @@ exclude = [
     "documents/",
     "logs/",
 ]
-mypy_path = "typings"

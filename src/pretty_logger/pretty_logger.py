@@ -43,7 +43,7 @@ FORMAT_FIELDS = {
 }
 
 FORMAT_STRING = (
-    "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s %(className)s "
+    "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s - "
     "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
 )
 
@@ -71,32 +71,32 @@ class WrappedColoredFormatter(logging.Formatter):
         return "\n".join(wrapped)
 
 
-class ClassLogger(logging.Logger):
-    EMPTY_CLASS = "N/A"
+# class ClassLogger(logging.Logger):
+#     EMPTY_CLASS = "N/A"
 
-    # def _log(self, level, msg, args, **kwargs):
-    #     if "extra" not in kwargs:
-    #         className = self.EMPTY_CLASS
-    #         if args and hasattr(args[0], "__class__"):
-    #             className = args[0].__class__.__name__
-    #         kwargs["extra"] = {"className": className}
-    #     super()._log(level, msg, args, **kwargs)
+#     def _log(self, level, msg, args, **kwargs):
+#         if "extra" not in kwargs:
+#             className = self.EMPTY_CLASS
+#             if args and hasattr(args[0], "__class__"):
+#                 className = args[0].__class__.__name__
+#             kwargs["extra"] = {"className": className}
+#         super()._log(level, msg, args, **kwargs)
 
-    def _log(self, level, msg, args, **kwargs):
-        # If the caller already passed “extra”, leave it alone
-        if "extra" not in kwargs:
-            class_name = self.EMPTY_CLASS
+# def _log(self, level, msg, args, **kwargs):
+#     # If the caller already passed “extra”, leave it alone
+#     if "extra" not in kwargs:
+#         class_name = self.EMPTY_CLASS
 
-            # Walk back up the stack to find a 'self' in locals
-            for frame_info in inspect.stack()[1:]:
-                local_self = frame_info.frame.f_locals.get("self")
-                if local_self is not None:
-                    class_name = local_self.__class__.__name__
-                    break
+#         # Walk back up the stack to find a 'self' in locals
+#         for frame_info in inspect.stack()[1:]:
+#             local_self = frame_info.frame.f_locals.get("self")
+#             if local_self is not None:
+#                 class_name = local_self.__class__.__name__
+#                 break
 
-            kwargs["extra"] = {"className": class_name}
+#         kwargs["extra"] = {"className": class_name}
 
-        super()._log(level, msg, args, **kwargs)
+#     super()._log(level, msg, args, **kwargs)
 
 
 def get_git_root() -> Optional[str]:
@@ -143,7 +143,7 @@ def configure_pretty_logging(
         log_file.parent.mkdir(parents=True)
     print(f"Configuring logging to {log_file}, level={level}, width={width}")
 
-    logging.setLoggerClass(ClassLogger)
+    # logging.setLoggerClass(ClassLogger)
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
 
