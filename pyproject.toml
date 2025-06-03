@@ -17,16 +17,3 @@ dot2tex = "^2.11.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.mypy]
-# Enable checking inside functions that have no type annotations
-mypy_path = "typings"
-check_untyped_defs = true
-exclude = [
-    "archive",
-    "tests/helpers/",
-    "legacy_code/",
-    "reference_data/",
-    "documents/",
-    "logs/",
-]
