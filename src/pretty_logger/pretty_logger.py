@@ -42,9 +42,13 @@ FORMAT_FIELDS = {
     "className": {"color": "magenta"},
 }
 
+# FORMAT_STRING = (
+#     "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s - "
+#     "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
+# )
 FORMAT_STRING = (
-    "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s - "
-    "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
+    "[%(asctime)s.%(msecs)03d] - %(name)s - "
+    "%(levelname)s - %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
 )
 
 
