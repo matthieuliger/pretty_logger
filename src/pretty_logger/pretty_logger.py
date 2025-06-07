@@ -135,9 +135,7 @@ def configure_pretty_logging(
     if isinstance(level, str):
         level = getattr(logging, level.upper(), logging.DEBUG)
     if not isinstance(level, int):
-        raise ValueError(
-            f"Invalid logging level: {level}. Must be str or int."
-        )
+        raise ValueError(f"Invalid logging level: {level}. Must be str or int.")
 
     if not log_file.parent.exists():
         log_file.parent.mkdir(parents=True)
@@ -183,7 +181,7 @@ def configure_pretty_logging(
 
 
 def get_module_logger(
-    name: str, level=logging.DEBUG, width: int = 120
+    name: str, level=logging.DEBUG, width: int = 120, mode: str = "a"
 ) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
@@ -192,7 +190,7 @@ def get_module_logger(
     if not logger.handlers:
         module_name = name.split(".")[-1]
         module_log_path = LOG_PATH / f"{module_name}.log"
-        file_handler = logging.FileHandler(module_log_path, mode="w")
+        file_handler = logging.FileHandler(module_log_path, mode=mode)
         file_handler.setLevel(level)
 
         # Use the same formatter and filter
@@ -201,9 +199,7 @@ def get_module_logger(
             level_styles=level_styles,
             field_styles=FORMAT_FIELDS,
         )
-        wrapped_formatter = WrappedColoredFormatter(
-            base_formatter, width=width
-        )
+        wrapped_formatter = WrappedColoredFormatter(base_formatter, width=width)
         file_handler.setFormatter(wrapped_formatter)
 
         file_handler.addFilter(EnsureClassName())
