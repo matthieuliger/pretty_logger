@@ -42,9 +42,13 @@ FORMAT_FIELDS = {
     "className": {"color": "magenta"},
 }
 
+# FORMAT_STRING = (
+#     "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s - "
+#     "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
+# )
 FORMAT_STRING = (
-    "[%(asctime)s.%(msecs)03d] - %(name)s - %(levelname)s - "
-    "- %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
+    "[%(asctime)s.%(msecs)03d] - %(name)s - "
+    "%(levelname)s - %(filename)s:%(lineno)d [%(funcName)s]: %(message)s"
 )
 
 
@@ -204,6 +208,20 @@ def get_module_logger(
 
         file_handler.addFilter(EnsureClassName())
         logger.addHandler(file_handler)
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+
+        # We can reuse the same wrapped_formatter for console output,
+        # or use a simpler coloredlogs formatter directly
+        console_formatter = coloredlogs.ColoredFormatter(
+            fmt=FORMAT_STRING,
+            level_styles=level_styles,
+            field_styles=FORMAT_FIELDS,
+        )
+        console_handler.setFormatter(console_formatter)
+        console_handler.addFilter(EnsureClassName())
+        logger.addHandler(console_handler)
 
         # Important: do not propagate to root logger if you only want module-specific logging
         # But if you want *both*, leave propagate=True (default)
