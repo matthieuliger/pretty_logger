@@ -193,7 +193,7 @@ def get_module_logger(
         )
         console_handler.setFormatter(console_formatter)
         console_handler.addFilter(EnsureClassName())
-        # logger.addHandler(console_handler)
+        logger.addHandler(console_handler)
 
         # Important: do not propagate to root logger if you only want module-specific logging
         # But if you want *both*, leave propagate=True (default)
