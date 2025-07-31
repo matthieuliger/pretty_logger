@@ -99,6 +99,7 @@ def configure_pretty_logging(
         "httpcore",
         "httpx",
         "pdfminer",
+        "openai",
         "python_multipart",
     ],
 ):
