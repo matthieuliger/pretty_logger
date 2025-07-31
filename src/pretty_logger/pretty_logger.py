@@ -125,7 +125,7 @@ def configure_pretty_logging(
     # Prevent duplicate handlers
     if root_logger.handlers:
         root_logger.warning("Root logger already has handlers.")
-        # return
+        return
 
     formatter = coloredlogs.ColoredFormatter(
         fmt=FORMAT_STRING,
@@ -171,6 +171,10 @@ def get_module_logger(
     if not logger.handlers:
         module_name = name.split(".")[-1]
         module_log_path = LOG_PATH / f"{module_name}.log"
+
+        if not module_log_path.parent.exists():
+            module_log_path.parent.mkdir(parents=True)
+
         file_handler = logging.FileHandler(module_log_path, mode=mode)
         file_handler.setLevel(level)
 
