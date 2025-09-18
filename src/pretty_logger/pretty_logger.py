@@ -163,6 +163,8 @@ def get_module_logger(
     width: int = 120,
     mode: str = "a",
     console: bool = True,
+    log_path: Optional[Path] = None,
+    propagate: bool = False,
 ) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
@@ -170,7 +172,12 @@ def get_module_logger(
     # Only add handler once
     if not logger.handlers:
         module_name = name.split(".")[-1]
-        module_log_path = LOG_PATH / f"{module_name}.log"
+        if log_path is None:
+            module_log_path = LOG_PATH / f"{module_name}.log"
+        else:
+            if not log_path.exists():
+                log_path.mkdir(parents=True)
+            module_log_path = log_path / f"{module_name}.log"
 
         if not module_log_path.parent.exists():
             module_log_path.parent.mkdir(parents=True)
@@ -206,6 +213,6 @@ def get_module_logger(
 
         # Important: do not propagate to root logger if you only want module-specific logging
         # But if you want *both*, leave propagate=True (default)
-        logger.propagate = True  # ✅ Send log to root handlers too
+        logger.propagate = propagate  # ✅ Send log to root handlers too
 
     return logger
