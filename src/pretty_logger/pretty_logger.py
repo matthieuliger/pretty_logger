@@ -169,6 +169,13 @@ def get_module_logger(
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
+    # If no log_path is given and root logger already has handlers
+    # (i.e. configure_pretty_logging was called), just return a named
+    # logger that inherits from root — no extra handlers needed.
+    if log_path is None and logging.getLogger().handlers:
+        logger.propagate = True
+        return logger
+
     # Only add handler once
     if not logger.handlers:
         module_name = name.split(".")[-1]
@@ -200,8 +207,6 @@ def get_module_logger(
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)
 
-            # We can reuse the same wrapped_formatter for console output,
-            # or use a simpler coloredlogs formatter directly
             console_formatter = coloredlogs.ColoredFormatter(
                 fmt=FORMAT_STRING,
                 level_styles=level_styles,
@@ -211,8 +216,6 @@ def get_module_logger(
             console_handler.addFilter(EnsureClassName())
             logger.addHandler(console_handler)
 
-        # Important: do not propagate to root logger if you only want module-specific logging
-        # But if you want *both*, leave propagate=True (default)
-        logger.propagate = propagate  # ✅ Send log to root handlers too
+        logger.propagate = propagate
 
     return logger
