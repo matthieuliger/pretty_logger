@@ -119,6 +119,8 @@ def get_module_logger(
     level: Union[str, int] = logging.DEBUG,
     width: int = 120,
     log_dir: Union[str, Path] = DEFAULT_LOG_DIR,
+    console: bool = False,
+    mode: str = "w",
 ) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
@@ -132,9 +134,15 @@ def get_module_logger(
         log_dir.mkdir(parents=True, exist_ok=True)
         module_name = name.split(".")[-1]
 
-        file_handler = logging.FileHandler(log_dir / f"{module_name}.log", mode="w")
+        file_handler = logging.FileHandler(log_dir / f"{module_name}.log", mode=mode)
         file_handler.setLevel(level)
         file_handler.setFormatter(_make_formatter(width))
         logger.addHandler(file_handler)
+
+        if console:
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(level)
+            console_handler.setFormatter(_make_formatter(width))
+            logger.addHandler(console_handler)
 
     return logger
